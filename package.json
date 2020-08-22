@@ -1,0 +1,24 @@
+{
+  "name": "note-taker",
+  "version": "1.0.0",
+  "description": "App that can be used to write, save, and delete notes. Saved notes are accessed as JSON through express backend.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "watch": "nodemon server6.js"
+  },
+  "author": "Kevin Miller",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Koldenblue/express-note-taker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Koldenblue/express-note-taker/issues"
+  },
+  "homepage": "https://github.com/Koldenblue/express-note-taker#readme"
+}
