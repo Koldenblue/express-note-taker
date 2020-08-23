@@ -24,7 +24,7 @@ app.get("/api/notes", function(req, res) {
         notesObj = JSON.parse(notesObj);
         console.log(notesObj);
         // notesObj = JSON.stringify(notesObj)
-        res.json(notesObj)
+        res.json(notesObj);
     })
 })
 
@@ -33,6 +33,26 @@ app.get("/*", function(req, res) {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.post("/api/notes", function(req, res) {
+    fs.readFile("db/db.json", "utf8", function(error, notesArr) {
+        if (error) {
+            throw new Error ("File read error");
+        }
+        notesArr = JSON.parse(notesArr);
+        notesArr.push(req.body);
+        notesArr = JSON.stringify(notesArr, null, 2);
+        fs.writeFile("db/db.json", notesArr, function(err) {
+            if (err) {
+                throw err;
+            }
+        });
+    })
+    res.json();
+})
+
+
+
+// last lines of code
 app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
 });
