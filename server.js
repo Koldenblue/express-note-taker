@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const { json } = require("express");
+const { promisify } = require("util");
 
 const app = express();
 let PORT = process.env.PORT || 3000;
@@ -24,9 +25,14 @@ fs.readFile("db/db.json", "utf8", function(error, notesArr) {
         console.log(error);
         throw new Error ("File read error");
     }
-    notesArr = JSON.parse(notesArr);
-    for (let note of notesArr) {
-        note.id > lastId ? lastId = note.id : null;
+    console.log("ADS")
+console.log(notesArr)
+console.log("HHH")
+    if (notesArr !== "") {
+        notesArr = JSON.parse(notesArr);
+        for (let note of notesArr) {
+            note.id > lastId ? lastId = note.id : null;
+        }
     }
 });
 
@@ -44,10 +50,12 @@ app.get("/api/notes", function(req, res) {
             console.log(error);
             throw new Error ("File read error");
         }
-        notesObj = JSON.parse(notesObj);
-        // console.log(notesObj);
-        // notesObj = JSON.stringify(notesObj)
-        res.json(notesObj);
+        if (notesObj === "") {
+            res.json({});
+        } else {
+            notesObj = JSON.parse(notesObj);
+            res.json(notesObj);
+        }
     });
 });
 
@@ -66,8 +74,12 @@ app.post("/api/notes", function(req, res) {
             console.log(error);
             throw new Error ("File read error");
         }
-        // next parse the notes as an array
-        notesArr = JSON.parse(notesArr);
+        if (notesArr === "") {
+            notesArr = [];
+        } else {
+            // next parse the notes as an array
+            notesArr = JSON.parse(notesArr);
+        }
         // increment lastId, then assign id to the new note. Push the new note to the note array.
         req.body.id = ++lastId;
         notesArr.push(req.body);
@@ -111,16 +123,17 @@ app.delete("/api/notes/:id", function(req, res) {
             }
         }
         console.log(notesArr);
+        let writeFileAsync = promisify(fs.writeFile);
         // write back to db.json. This is asynchronous!
         // front end then reads db.json with a get request
-        // notesArr = JSON.stringify(notesArr, null, 2);
-        // fs.writeFile("db/db.json", notesArr, function(err) {
-        //     if (err) {
-        //         throw err;
-        //     }
-        // });
-        //delete request does not utilize response, so no need to respond with anything
-        res.json();
+        notesArr = JSON.stringify(notesArr, null, 2);
+        writeFileAsync("db/db.json", notesArr, function(err) {
+            if (err) {
+                throw err;
+            }
+            console.log("written");
+            // delete request does not utilize response, so no need to respond with anything
+        }).then(() => res.json())
     });
 });
 
