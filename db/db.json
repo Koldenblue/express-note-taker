@@ -1,32 +1,7 @@
 [
   {
-    "title": "Test Title",
-    "text": "Test text",
+    "title": "Your notes are stored here.",
+    "text": "Click the pencil icon to write a new note, then click the save icon to save it!",
     "id": 1
-  },
-  {
-    "title": "adf",
-    "text": "adsf",
-    "id": 2
-  },
-  {
-    "title": "d",
-    "text": "ddd",
-    "id": 3
-  },
-  {
-    "title": "ddd",
-    "text": "aaa",
-    "id": 4
-  },
-  {
-    "title": "dd",
-    "text": "fadsf",
-    "id": 5
-  },
-  {
-    "title": "aa",
-    "text": "aa",
-    "id": 6
   }
 ]
