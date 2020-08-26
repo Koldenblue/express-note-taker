@@ -111,10 +111,16 @@ app.delete("/api/notes/:id", function(req, res) {
             }
         }
         console.log(notesArr);
-        // write back to db.json
-
-        // send new notes array back to front end
-        res.json(notesArr);
+        // write back to db.json. This is asynchronous!
+        // front end then reads db.json with a get request
+        // notesArr = JSON.stringify(notesArr, null, 2);
+        // fs.writeFile("db/db.json", notesArr, function(err) {
+        //     if (err) {
+        //         throw err;
+        //     }
+        // });
+        //delete request does not utilize response, so no need to respond with anything
+        res.json();
     });
 });
 

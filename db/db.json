@@ -1,12 +1,7 @@
 [
   {
-    "title": "Your notes are stored here.",
-    "text": "Click the pencil icon to write a new note, then click the save icon to save it!",
-    "id": 1
-  },
-  {
-    "title": "dadf",
-    "text": "dfafadf",
-    "id": 2
+    "title": "note",
+    "text": "a note text",
+    "id": "0"
   }
 ]
