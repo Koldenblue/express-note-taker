@@ -45,11 +45,11 @@ app.get("/api/notes", function(req, res) {
             throw new Error ("File read error");
         }
         notesObj = JSON.parse(notesObj);
-        console.log(notesObj);
+        // console.log(notesObj);
         // notesObj = JSON.stringify(notesObj)
         res.json(notesObj);
-    })
-})
+    });
+});
 
 
 // this route must be last, as the default action. Return to index.html for any routes except the ones specified above.
@@ -72,6 +72,9 @@ app.post("/api/notes", function(req, res) {
         req.body.id = ++lastId;
         notesArr.push(req.body);
 
+        // send response in order to update the notes Push the new note to the array.
+        res.json(notesArr);
+
         // convert the notes array back into a string, and write back to db.json
         notesArr = JSON.stringify(notesArr, null, 2);
         fs.writeFile("db/db.json", notesArr, function(err) {
@@ -79,9 +82,8 @@ app.post("/api/notes", function(req, res) {
                 throw err;
             }
         });
-    })
-    res.json();
-})
+    });
+});
 
 
 app.delete("/api/notes/:id", function(req, res) {
