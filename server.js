@@ -20,14 +20,8 @@ app.use(express.static('public'));
 let lastId = 0;
 
 // upon server start, set lastId to be the greatest id number
-fs.readFile("db/db.json", "utf8", function(error, notesArr) {
-    if (error) {
-        console.log(error);
-        throw new Error ("File read error");
-    }
-    console.log("ADS")
-console.log(notesArr)
-console.log("HHH")
+fs.readFile("db/db.json", "utf8", (error, notesArr) => {
+    if (error) throw error;
     if (notesArr !== "") {
         notesArr = JSON.parse(notesArr);
         for (let note of notesArr) {
@@ -38,20 +32,17 @@ console.log("HHH")
 
 
 // serve notes.html at this route
-app.get("/notes", function(request, response) {
+app.get("/notes", (request, response) => {
     response.sendFile(path.join(__dirname, "notes.html"));
 });
 
 
 // handle get requests to the api for notes by reading from db.json
-app.get("/api/notes", function(req, res) {
-    fs.readFile("db/db.json", "utf8", function(error, notesObj) {
-        if (error) {
-            console.log(error);
-            throw new Error ("File read error");
-        }
+app.get("/api/notes", (req, res) => {
+    fs.readFile("db/db.json", "utf8", (error, notesObj) => {
+        if (error) throw error;
         if (notesObj === "") {
-            res.json({});
+            res.json([]);
         } else {
             notesObj = JSON.parse(notesObj);
             res.json(notesObj);
@@ -67,19 +58,13 @@ app.get("/*", function(req, res) {
 
 
 // allow posting of new notes to the notes api
-app.post("/api/notes", function(req, res) {
+app.post("/api/notes", (req, res) => {
     // first read from db.json to get the current notes
-    fs.readFile("db/db.json", "utf8", function(error, notesArr) {
-        if (error) {
-            console.log(error);
-            throw new Error ("File read error");
-        }
-        if (notesArr === "") {
-            notesArr = [];
-        } else {
-            // next parse the notes as an array
-            notesArr = JSON.parse(notesArr);
-        }
+    fs.readFile("db/db.json", "utf8", (error, notesArr) => {
+        if (error) throw error;
+        // next parse the notes as an array
+        notesArr === "" ? notesArr = [] : notesArr = JSON.parse(notesArr);
+
         // increment lastId, then assign id to the new note. Push the new note to the note array.
         req.body.id = ++lastId;
         notesArr.push(req.body);
@@ -89,32 +74,27 @@ app.post("/api/notes", function(req, res) {
 
         // convert the notes array back into a string, and write back to db.json
         notesArr = JSON.stringify(notesArr, null, 2);
-        fs.writeFile("db/db.json", notesArr, function(err) {
-            if (err) {
-                throw err;
-            }
+        fs.writeFile("db/db.json", notesArr, (err) => {
+            if (err) throw err;
         });
     });
 });
 
 
-app.delete("/api/notes/:id", function(req, res) {
+app.delete("/api/notes/:id", (req, res) => {
     console.log(req.params);
     console.log(req.body);
     noteToDelete = Number(req.params.id);
     console.log("note to delete is " + noteToDelete)
-    
-    fs.readFile("db/db.json", "utf8", function(error, notesArr) {
-        if (error) {
-            console.log(error);
-            throw new Error ("File read error");
-        }
-        // next parse the notes as an array
+
+    fs.readFile("db/db.json", "utf8", (error, notesArr) => {
+        if (error) throw error;
+        // next parse the notes as an array. notes will never be blank for delete.
         notesArr = JSON.parse(notesArr);
-        
+
         // Find the note to delete in the array, and delete it
         // tried to use .forEach(), but apparently .forEach() cannot accept break statement
-        for (let i = 0, j  = notesArr.length; i < j; i++) {
+        for (let i = 0, j = notesArr.length; i < j; i++) {
             console.log(notesArr[i].id)
             if (notesArr[i].id === noteToDelete) {
                 console.log("i is ", i);
@@ -127,10 +107,8 @@ app.delete("/api/notes/:id", function(req, res) {
         // write back to db.json. This is asynchronous!
         // front end then reads db.json with a get request
         notesArr = JSON.stringify(notesArr, null, 2);
-        writeFileAsync("db/db.json", notesArr, function(err) {
-            if (err) {
-                throw err;
-            }
+        writeFileAsync("db/db.json", notesArr, err => {
+            if (err) throw err;
             console.log("written");
             // delete request does not utilize response, so no need to respond with anything
         }).then(() => res.json())
