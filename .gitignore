@@ -1,4 +1,7 @@
 /Develop/
+.DS_Store
+.vscode
+db.json
 
 # Logs
 logs
