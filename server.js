@@ -72,7 +72,7 @@ app.post("/api/notes", function(req, res) {
         req.body.id = ++lastId;
         notesArr.push(req.body);
 
-        // send response in order to update the notes Push the new note to the array.
+        // send json response to front end in order to update the notes. Push the new note to the array.
         res.json(notesArr);
 
         // convert the notes array back into a string, and write back to db.json
@@ -89,7 +89,33 @@ app.post("/api/notes", function(req, res) {
 app.delete("/api/notes/:id", function(req, res) {
     console.log(req.params);
     console.log(req.body);
-    res.json();
+    noteToDelete = Number(req.params.id);
+    console.log("note to delete is " + noteToDelete)
+    
+    fs.readFile("db/db.json", "utf8", function(error, notesArr) {
+        if (error) {
+            console.log(error);
+            throw new Error ("File read error");
+        }
+        // next parse the notes as an array
+        notesArr = JSON.parse(notesArr);
+        
+        // Find the note to delete in the array, and delete it
+        // tried to use .forEach(), but apparently .forEach() cannot accept break statement
+        for (let i = 0, j  = notesArr.length; i < j; i++) {
+            console.log(notesArr[i].id)
+            if (notesArr[i].id === noteToDelete) {
+                console.log("i is ", i);
+                notesArr.splice(i, 1);
+                break;
+            }
+        }
+        console.log(notesArr);
+        // write back to db.json
+
+        // send new notes array back to front end
+        res.json(notesArr);
+    });
 });
 
 // last lines of code
