@@ -1,9 +1,9 @@
+
 /Develop/
 .DS_Store
 .vscode
-*/db.json
-*/backup-db.json
-db/**
+db/backup-db.json
+
 
 # Logs
 logs
