@@ -87,7 +87,8 @@ app.delete("/api/notes/:id", (req, res) => {
     console.log("note to delete is " + noteToDelete)
     deleteNote(noteToDelete).then(function() {
         console.log("Sending response")
-        res.json()
+        // must return true as response! Or promised deleteNote() will never finish and notes won't be newly rendered
+        res.json(true)
     })
 });
 

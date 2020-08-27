@@ -1,7 +1,9 @@
 /Develop/
 .DS_Store
 .vscode
-db.json
+*/db.json
+*/backup-db.json
+db/**
 
 # Logs
 logs
@@ -107,3 +109,6 @@ dist
 
 # TernJS port file
 .tern-port
+db/backup-db.json
+db/backup-db.json
+db/backup-db.json
