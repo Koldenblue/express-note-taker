@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const { json } = require("express");
-const { promisify } = require("util");
+const util = require("util");
 
 const app = express();
 let PORT = process.env.PORT || 3000;
@@ -83,37 +83,55 @@ app.post("/api/notes", (req, res) => {
 
 app.delete("/api/notes/:id", (req, res) => {
     console.log(req.params);
-    console.log(req.body);
     noteToDelete = Number(req.params.id);
     console.log("note to delete is " + noteToDelete)
-
-    fs.readFile("db/db.json", "utf8", (error, notesArr) => {
-        if (error) throw error;
-        // next parse the notes as an array. notes will never be blank for delete.
-        notesArr = JSON.parse(notesArr);
-
-        // Find the note to delete in the array, and delete it
-        // tried to use .forEach(), but apparently .forEach() cannot accept break statement
-        for (let i = 0, j = notesArr.length; i < j; i++) {
-            console.log(notesArr[i].id)
-            if (notesArr[i].id === noteToDelete) {
-                console.log("i is ", i);
-                notesArr.splice(i, 1);
-                break;
-            }
-        }
-        console.log(notesArr);
-        let writeFileAsync = promisify(fs.writeFile);
-        // write back to db.json. This is asynchronous!
-        // front end then reads db.json with a get request
-        notesArr = JSON.stringify(notesArr, null, 2);
-        writeFileAsync("db/db.json", notesArr, err => {
-            if (err) throw err;
-            console.log("written");
-            // delete request does not utilize response, so no need to respond with anything
-        }).then(() => res.json())
-    });
+    deleteNote(noteToDelete).then(function() {
+        console.log("Sending response")
+        res.json()
+    })
 });
+
+async function deleteNote(noteToDelete) {
+    let writeFileAsync = util.promisify(fs.writeFile);
+    let readFileAsync = util.promisify(fs.readFile);
+    let currentNotes;
+    try {
+        currentNotes = await readFileAsync("db/db.json", "utf8");
+            // next parse the notes as an array. notes will never be blank for delete.
+            currentNotes = JSON.parse(currentNotes);
+
+            // Find the note to delete in the array, and delete it
+            // tried to use .forEach(), but apparently .forEach() cannot accept break statement
+            for (let i = 0, j = currentNotes.length; i < j; i++) {
+                console.log(currentNotes[i].id)
+                if (currentNotes[i].id === noteToDelete) {
+                    console.log("i is ", i);
+                    currentNotes.splice(i, 1);
+                    break;
+                }
+            }
+            console.log(currentNotes);
+            // write back to db.json. This is asynchronous!
+            // front end then reads db.json with a get request
+            currentNotes = JSON.stringify(currentNotes, null, 2);
+            console.log("notes array is")
+            console.log(currentNotes)
+        }
+    catch (err) {
+        throw err
+    };
+    console.log("NOW NOTES IS")
+    console.log(currentNotes)
+    try {
+        await writeFileAsync("db/db.json", currentNotes)
+        // delete request does not utilize response, so no need to respond with anything
+        console.log("responding")
+        console.log(currentNotes)
+    } catch (error) {
+        throw error;
+    }
+    console.log("finished writing db note file")
+}
 
 // last lines of code
 app.listen(PORT, function() {
