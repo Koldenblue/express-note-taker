@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { json } = require("express");
 const util = require("util");
+const errorNote = require("./error.js");
 
 const app = express();
 let PORT = process.env.PORT || 3000;
@@ -21,12 +22,16 @@ let lastId = 0;
 
 // upon server start, set lastId to be the greatest id number
 fs.readFile("db/db.json", "utf8", (error, notesArr) => {
-    if (error) throw error;
-    if (notesArr !== "") {
-        notesArr = JSON.parse(notesArr);
-        for (let note of notesArr) {
-            note.id > lastId ? lastId = note.id : null;
+    try {
+        if (error) throw error;
+        if (notesArr === "") {
+            notesArr = JSON.parse(notesArr);
+            for (let note of notesArr) {
+                note.id > lastId ? lastId = note.id : null;
+            }
         }
+    } catch (error) {
+        console.error(error);
     }
 });
 
@@ -40,12 +45,17 @@ app.get("/notes", (request, response) => {
 // handle get requests to the api for notes by reading from db.json
 app.get("/api/notes", (req, res) => {
     fs.readFile("db/db.json", "utf8", (error, notesObj) => {
-        if (error) throw error;
-        if (notesObj === "") {
-            res.json([]);
-        } else {
-            notesObj = JSON.parse(notesObj);
-            res.json(notesObj);
+        try {
+            if (error) throw error;
+            if (notesObj === "") {
+                res.json([]);
+            } else {
+                notesObj = JSON.parse(notesObj);
+                res.json(notesObj);
+            }
+        } catch (error) {
+            console.error(error);
+            res.json(errorNote);
         }
     });
 });
@@ -59,25 +69,30 @@ app.get("/*", function(req, res) {
 
 // allow posting of new notes to the notes api
 app.post("/api/notes", (req, res) => {
-    // first read from db.json to get the current notes
-    fs.readFile("db/db.json", "utf8", (error, notesArr) => {
-        if (error) throw error;
-        // next parse the notes as an array
-        notesArr === "" ? notesArr = [] : notesArr = JSON.parse(notesArr);
+    try {
+        // first read from db.json to get the current notes
+        fs.readFile("db/db.json", "utf8", (error, notesArr) => {
+            if (error) throw error;
+            // next parse the notes as an array
+            notesArr === "" ? notesArr = [] : notesArr = JSON.parse(notesArr);
 
-        // increment lastId, then assign id to the new note. Push the new note to the note array.
-        req.body.id = ++lastId;
-        notesArr.push(req.body);
+            // increment lastId, then assign id to the new note. Push the new note to the note array.
+            req.body.id = ++lastId;
+            notesArr.push(req.body);
 
-        // send json response to front end in order to update the notes. Push the new note to the array.
-        res.json(notesArr);
+            // send json response to front end in order to update the notes. Push the new note to the array.
+            // must return true for function to complete promise
+            res.json(true);
 
-        // convert the notes array back into a string, and write back to db.json
-        notesArr = JSON.stringify(notesArr, null, 2);
-        fs.writeFile("db/db.json", notesArr, (err) => {
-            if (err) throw err;
+            // convert the notes array back into a string, and write back to db.json
+            notesArr = JSON.stringify(notesArr, null, 2);
+            fs.writeFile("db/db.json", notesArr, (err) => {
+                if (err) throw err;
+            });
         });
-    });
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 
@@ -98,28 +113,28 @@ async function deleteNote(noteToDelete) {
     let currentNotes;
     try {
         currentNotes = await readFileAsync("db/db.json", "utf8");
-            // next parse the notes as an array. notes will never be blank for delete.
-            currentNotes = JSON.parse(currentNotes);
+        // next parse the notes as an array. notes will never be blank for delete.
+        currentNotes = JSON.parse(currentNotes);
 
-            // Find the note to delete in the array, and delete it
-            // tried to use .forEach(), but apparently .forEach() cannot accept break statement
-            for (let i = 0, j = currentNotes.length; i < j; i++) {
-                console.log(currentNotes[i].id)
-                if (currentNotes[i].id === noteToDelete) {
-                    console.log("i is ", i);
-                    currentNotes.splice(i, 1);
-                    break;
-                }
+        // Find the note to delete in the array, and delete it
+        // tried to use .forEach(), but apparently .forEach() cannot accept break statement
+        for (let i = 0, j = currentNotes.length; i < j; i++) {
+            console.log(currentNotes[i].id)
+            if (currentNotes[i].id === noteToDelete) {
+                console.log("i is ", i);
+                currentNotes.splice(i, 1);
+                break;
             }
-            console.log(currentNotes);
-            // write back to db.json. This is asynchronous!
-            // front end then reads db.json with a get request
-            currentNotes = JSON.stringify(currentNotes, null, 2);
-            console.log("notes array is")
-            console.log(currentNotes)
         }
+        console.log(currentNotes);
+        // write back to db.json. This is asynchronous!
+        // front end then reads db.json with a get request
+        currentNotes = JSON.stringify(currentNotes, null, 2);
+        console.log("notes array is")
+        console.log(currentNotes)
+    }
     catch (err) {
-        throw err
+        throw err;
     };
     console.log("NOW NOTES IS")
     console.log(currentNotes)
@@ -129,7 +144,7 @@ async function deleteNote(noteToDelete) {
         console.log("responding")
         console.log(currentNotes)
     } catch (error) {
-        throw error;
+        console.error(error);
     }
     console.log("finished writing db note file")
 }
