@@ -10,8 +10,9 @@
 4. <a href="#license">License</a>
 5. <a href="#test">Tests</a>
 6. <a href="#questions">Issues and Questions</a>
+<hr>
 <h3 id='description'>Description</h3>
-This app allows a user to store and retrieve notes from a server. The deployed project may be found at {{placeholder}}. Click on the pencil icon to write new notes. Click the save icon to save notes, and click the trash bin icon to delete them.
+This app allows a user to store and retrieve notes from a server. The deployed project may be found at https://fast-brook-96701.herokuapp.com/. Click on the pencil icon to write new notes. Click the save icon to save notes, and click the trash bin icon to delete them. Take note - since the app is deployed on a public server, anyone may view, edit, and write notes to the app.
 
 ![image](https://user-images.githubusercontent.com/64618290/91626634-bbcd8b00-e965-11ea-89bf-5e3fc2c224f5.png)
 

@@ -121,28 +121,21 @@ async function deleteNote(noteToDelete) {
         for (let i = 0, j = currentNotes.length; i < j; i++) {
             console.log(currentNotes[i].id)
             if (currentNotes[i].id === noteToDelete) {
-                console.log("i is ", i);
                 currentNotes.splice(i, 1);
                 break;
             }
         }
-        console.log(currentNotes);
-        // write back to db.json. This is asynchronous!
-        // front end then reads db.json with a get request
         currentNotes = JSON.stringify(currentNotes, null, 2);
-        console.log("notes array is")
-        console.log(currentNotes)
+        
     }
     catch (err) {
         throw err;
     };
-    console.log("NOW NOTES IS")
-    console.log(currentNotes)
+    // write back to db.json. This is asynchronous!
+    // front end then reads db.json with a get request
     try {
         await writeFileAsync("db/db.json", currentNotes)
-        // delete request does not utilize response, so no need to respond with anything
         console.log("responding")
-        console.log(currentNotes)
     } catch (error) {
         console.error(error);
     }
