@@ -18,7 +18,7 @@ This app allows a user to store and retrieve notes from a server. Check out the 
 
 ![image](https://user-images.githubusercontent.com/64618290/91626634-bbcd8b00-e965-11ea-89bf-5e3fc2c224f5.png)
 
-Front end templates and programming were already in place for this app. Only back-end server code was was written. The Express framework for the Node.js library was used to code server routes. Notes are stored in json format. Asynchronous javascript functions are used to handle get, post, and delete requests. Asynchronous programming is also used to properly handle reading and writing notes to and from the json file.
+The Express framework for the Node.js library was used to code server routes. Notes are stored in json format. Asynchronous javascript functions are used to handle get, post, and delete requests. Asynchronous programming is also used to properly handle reading and writing notes to and from the json file.
 
 This program is simple and functional. The most obvious improvement to the program would be the utilization of a more robust database system for note storage, such as MySQL. Other improvements could be accomplished in the area of front-end design. Scripting improvements such as search, filtering, and ordering functions would be welcome. Nevertheless, the app demonstrates persistent server functionality and straightforward use cases for the Express framework.
 
